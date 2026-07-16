@@ -16,7 +16,7 @@
     "dev": "node src/index.ts"
   },
   "devDependencies": {
-    "typescript": "^5.7.0",
+    "typescript": "^7.0.2",
     "@types/node": "^24.0.0"
   },
   "engines": {
