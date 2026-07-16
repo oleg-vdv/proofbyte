@@ -4,6 +4,17 @@
   "description": "Cryptographic inventory (CycloneDX CBOM) and post-quantum migration report for your codebase",
   "license": "MIT",
   "type": "module",
+  "author": "Oleg Vdovenko",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oleg-vdv/proofbyte.git",
+    "directory": "packages/pqc-radar"
+  },
+  "homepage": "https://github.com/oleg-vdv/proofbyte#readme",
+  "bugs": "https://github.com/oleg-vdv/proofbyte/issues",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "pqc-radar": "dist/index.js"
   },
@@ -12,6 +23,7 @@
   ],
   "scripts": {
     "build": "tsc",
+    "prepublishOnly": "tsc && node --test test/scan.test.ts",
     "test": "node --test test/scan.test.ts",
     "dev": "node src/index.ts"
   },
