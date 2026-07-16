@@ -10,8 +10,11 @@ Do not open public issues for security problems. We aim to acknowledge reports w
 
 pqc-radar is designed to be safe to run on sensitive codebases:
 
-- **Fully offline.** The scanner makes **no network calls** — it only reads files under the
-  path you pass to `scan` and writes only the output files you specify.
+- **Offline by default.** The `scan` command makes **no network calls** — it only reads
+  files under the path you pass and writes only the output files you specify. The
+  explicit `scan-tls` command is the sole network feature: it performs one TLS handshake
+  per endpoint **you name on the command line**, sends no application data, and never
+  probes anything you did not list.
 - **Zero runtime dependencies.** The published package depends on nothing but the Node.js
   standard library, minimizing supply-chain surface.
 - **No file content leaves the machine.** Reports contain file paths, line numbers, and

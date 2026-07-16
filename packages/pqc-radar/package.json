@@ -1,6 +1,6 @@
 {
   "name": "@proofbyte/pqc-radar",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Cryptographic inventory (CycloneDX CBOM) and post-quantum migration report for your codebase",
   "license": "MIT",
   "type": "module",
@@ -23,8 +23,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "prepublishOnly": "tsc && node --test test/scan.test.ts",
-    "test": "node --test test/scan.test.ts",
+    "prepublishOnly": "tsc && node --test test/scan.test.ts test/tls.test.ts",
+    "test": "node --test test/scan.test.ts test/tls.test.ts",
     "dev": "node src/index.ts"
   },
   "devDependencies": {

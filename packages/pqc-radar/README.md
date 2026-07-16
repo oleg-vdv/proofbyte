@@ -26,6 +26,16 @@ Outputs:
 | `--sarif <file>` | SARIF 2.1.0 log for GitHub code scanning |
 | `--fail-on-findings` | Exit 1 when quantum-vulnerable crypto is found (CI gate) |
 
+## Live TLS endpoint check
+
+```bash
+npx @proofbyte/pqc-radar scan-tls your-api.example.com github.com:443 [--json out.json]
+```
+
+One handshake per named host (no data sent): negotiated protocol, cipher, key-exchange
+group, certificate key type — and whether the endpoint already negotiates **hybrid
+post-quantum key exchange**. Unknown groups are reported as *inconclusive*, not findings.
+
 ## CI gate example
 
 ```yaml

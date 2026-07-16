@@ -5,21 +5,64 @@ import { buildCbom } from './cbom.ts';
 import { buildReport } from './report.ts';
 import { buildSarif } from './sarif.ts';
 import { scan } from './scanner.ts';
+import { checkTlsEndpoint, formatTlsResult, parseEndpoint } from './tls.ts';
 
 const USAGE = `pqc-radar — cryptographic inventory & post-quantum migration report
 
 Usage:
   pqc-radar scan <path> [--cbom <file>] [--report <file>] [--sarif <file>] [--fail-on-findings]
+  pqc-radar scan-tls <host[:port]> [more hosts...] [--json <file>] [--fail-on-findings]
 
-Options:
+scan options:
   --cbom <file>        Write CycloneDX 1.6 CBOM JSON to <file>
   --report <file>      Write human-readable Markdown report to <file>
   --sarif <file>       Write SARIF 2.1.0 log to <file> (GitHub code scanning)
   --fail-on-findings   Exit with code 1 if quantum-vulnerable crypto is found (CI gate)
+
+scan-tls options:
+  --json <file>        Write raw endpoint results as JSON to <file>
+  --fail-on-findings   Exit with code 1 if any endpoint lacks hybrid PQC key
+                       exchange or uses a legacy protocol (CI gate)
+
+scan-tls connects only to the endpoints you name and performs one TLS
+handshake per host to record the negotiated cryptography. It sends no data.
 `;
 
-function main(argv: string[]): number {
+async function runScanTls(rest: string[]): Promise<number> {
+  const hosts: Array<{ host: string; port: number }> = [];
+  let jsonPath: string | undefined;
+  let failOnFindings = false;
+
+  for (let i = 0; i < rest.length; i++) {
+    if (rest[i] === '--json') jsonPath = rest[++i];
+    else if (rest[i] === '--fail-on-findings') failOnFindings = true;
+    else if (rest[i].startsWith('--')) {
+      process.stderr.write(`Unknown option: ${rest[i]}\n${USAGE}`);
+      return 2;
+    } else hosts.push(parseEndpoint(rest[i]));
+  }
+  if (hosts.length === 0) {
+    process.stdout.write(USAGE);
+    return 2;
+  }
+
+  const results = await Promise.all(hosts.map((h) => checkTlsEndpoint(h.host, h.port)));
+  for (const r of results) console.log(formatTlsResult(r) + '\n');
+
+  if (jsonPath) {
+    writeFileSync(jsonPath, JSON.stringify(results, null, 2));
+    console.log(`JSON written to ${jsonPath}`);
+  }
+
+  const bad = results.filter(
+    (r) => !r.ok || !r.assessment?.hybridPqcKeyExchange || r.assessment.legacyProtocol,
+  );
+  return failOnFindings && bad.length > 0 ? 1 : 0;
+}
+
+async function main(argv: string[]): Promise<number> {
   const [command, ...rest] = argv;
+  if (command === 'scan-tls') return runScanTls(rest);
   if (command !== 'scan' || rest.length === 0 || rest[0].startsWith('--')) {
     process.stdout.write(USAGE);
     return command === undefined || command === '--help' ? 0 : 2;
@@ -80,4 +123,4 @@ function main(argv: string[]): number {
   return failOnFindings && vulnerable.length > 0 ? 1 : 0;
 }
 
-process.exit(main(process.argv.slice(2)));
+main(process.argv.slice(2)).then((code) => process.exit(code));

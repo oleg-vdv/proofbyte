@@ -31,6 +31,9 @@ jobs:
       - run: npm run build
       - name: Self-scan (dogfood)
         run: node packages/pqc-radar/dist/index.js scan . --cbom cbom.json --report report.md --sarif findings.sarif
+      - name: TLS endpoint check (dogfood)
+        run: node packages/pqc-radar/dist/index.js scan-tls github.com --json tls-check.json
+        continue-on-error: true
       - uses: actions/upload-artifact@v7
         with:
           name: self-scan

@@ -34,6 +34,18 @@ scans in ~0.7 s.
 **Language coverage (v0):** Java/Kotlin/Scala, Python, JavaScript/TypeScript, Go, C#, Rust,
 Ruby, PHP, C/C++, plus nginx/Apache TLS configs and certificate/keystore file discovery.
 
+### Live TLS endpoint check
+
+```bash
+npx @proofbyte/pqc-radar scan-tls your-api.example.com github.com:443
+```
+
+One handshake per host (no data sent) reports the negotiated protocol, cipher,
+key-exchange group and certificate key — and whether the endpoint already speaks
+**hybrid post-quantum key exchange** (X25519+ML-KEM-768) or is still
+harvest-now-decrypt-later exposed. Unknown groups are reported as *inconclusive*,
+never as findings.
+
 ### CI gate
 
 ```yaml
@@ -46,9 +58,10 @@ Ruby, PHP, C/C++, plus nginx/Apache TLS configs and certificate/keystore file di
 
 ## Security
 
-The scanner is **fully offline** (no network calls), has **zero runtime dependencies**,
+The code scanner is **fully offline** (no network calls), has **zero runtime dependencies**,
 never modifies scanned code, skips symlinks, and only writes the output files you name.
-See [SECURITY.md](SECURITY.md).
+`scan-tls` is the one network feature: it connects only to endpoints you explicitly list
+and sends no payload beyond the TLS handshake. See [SECURITY.md](SECURITY.md).
 
 ## Status & roadmap
 
