@@ -59,7 +59,7 @@ test('go fixture: RSA, ECDSA/elliptic, SHA-1', () => {
   assert.ok(ids?.has('sha1'), 'expected sha1');
 });
 
-test('csharp fixture: RSA, ECDsa, MD5', () => {
+test('csharp fixture: RSA, ECDSA, MD5', () => {
   const byFile = algorithmsIn(['CryptoService.cs']);
   const ids = [...byFile.values()][0];
   assert.ok(ids?.has('rsa-keygen'), 'expected rsa-keygen');
@@ -139,4 +139,14 @@ test('scan of an empty-ish dir returns no findings', () => {
   // regexes must not match their own source. Guard against self-triggering.
   const selfHits = result.findings.filter((f) => f.file.includes('patterns.ts'));
   assert.equal(selfHits.length, 0, `patterns must not match their own definitions: ${JSON.stringify(selfHits.map((f) => f.pattern.id))}`);
+});
+
+test('scanning our own package flags only fixtures, never src or tests', () => {
+  const result = scan(dirname(fileURLToPath(import.meta.url)) + '/..');
+  const nonFixtureHits = result.findings.filter((f) => !f.file.includes('fixtures'));
+  assert.equal(
+    nonFixtureHits.length,
+    0,
+    `only fixtures may contain findings: ${JSON.stringify(nonFixtureHits.map((f) => `${f.file}:${f.line} ${f.pattern.id}`))}`,
+  );
 });
