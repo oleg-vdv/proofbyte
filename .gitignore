@@ -5,3 +5,6 @@ dist/
 cbom.json
 report.md
 !test/golden/*.json
+otchet.md
+demo.md
+demo-cbom.json
