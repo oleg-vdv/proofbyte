@@ -28,8 +28,9 @@ npx @proofbyte/pqc-radar scan ./my-repo --cbom cbom.json --report report.md --sa
   (ML-KEM / FIPS 203, ML-DSA / FIPS 204, hybrid TLS);
 - **`findings.sarif`** — a SARIF 2.1.0 log for GitHub code scanning or any SARIF viewer.
 
-Fast: a 117-file crypto-heavy repository ([node-forge](https://github.com/digitalbazaar/forge))
-scans in ~0.7 s.
+Fast: [hashicorp/vault](https://github.com/hashicorp/vault) (4 827 files) scans in ~9 s,
+[node-forge](https://github.com/digitalbazaar/forge) in ~0.7 s — see
+[real-world corpus results](docs/CORPUS.md), regenerated weekly in CI.
 
 **Language coverage (v0):** Java/Kotlin/Scala, Python, JavaScript/TypeScript, Go, C#, Rust,
 Ruby, PHP, C/C++, plus nginx/Apache TLS configs and certificate/keystore file discovery.
