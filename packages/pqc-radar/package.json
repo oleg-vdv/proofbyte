@@ -1,0 +1,34 @@
+{
+  "name": "@proofbyte/pqc-radar",
+  "version": "0.1.0",
+  "description": "Cryptographic inventory (CycloneDX CBOM) and post-quantum migration report for your codebase",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "pqc-radar": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test test/scan.test.ts",
+    "dev": "node src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^24.0.0"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "post-quantum",
+    "pqc",
+    "cbom",
+    "cyclonedx",
+    "cryptography",
+    "compliance",
+    "security"
+  ]
+}
