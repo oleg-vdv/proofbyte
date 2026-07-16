@@ -30,10 +30,11 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Self-scan (dogfood)
-        run: node packages/pqc-radar/dist/index.js scan . --cbom cbom.json --report report.md
+        run: node packages/pqc-radar/dist/index.js scan . --cbom cbom.json --report report.md --sarif findings.sarif
       - uses: actions/upload-artifact@v4
         with:
           name: self-scan
           path: |
             cbom.json
             report.md
+            findings.sarif

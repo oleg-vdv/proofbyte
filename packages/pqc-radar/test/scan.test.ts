@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path';
 import { scan } from '../dist/scanner.js';
 import { buildCbom } from '../dist/cbom.js';
 import { buildReport } from '../dist/report.js';
+import { buildSarif } from '../dist/sarif.js';
 
 const FIXTURES = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
@@ -48,6 +49,60 @@ test('nginx fixture: legacy TLS protocol and RSA ciphers', () => {
   const ids = [...byFile.values()][0];
   assert.ok(ids?.has('tls-legacy-protocol'), 'expected tls-legacy-protocol');
   assert.ok(ids?.has('tls-rsa-ciphers'), 'expected tls-rsa-ciphers');
+});
+
+test('go fixture: RSA, ECDSA/elliptic, SHA-1', () => {
+  const byFile = algorithmsIn(['main.go']);
+  const ids = [...byFile.values()][0];
+  assert.ok(ids?.has('rsa-keygen'), 'expected rsa-keygen');
+  assert.ok(ids?.has('ec-keygen'), 'expected ec-keygen');
+  assert.ok(ids?.has('sha1'), 'expected sha1');
+});
+
+test('csharp fixture: RSA, ECDsa, MD5', () => {
+  const byFile = algorithmsIn(['CryptoService.cs']);
+  const ids = [...byFile.values()][0];
+  assert.ok(ids?.has('rsa-keygen'), 'expected rsa-keygen');
+  assert.ok(ids?.has('ec-keygen'), 'expected ec-keygen');
+  assert.ok(ids?.has('md5'), 'expected md5');
+});
+
+test('rust fixture: RSA and p256', () => {
+  const byFile = algorithmsIn(['main.rs']);
+  const ids = [...byFile.values()][0];
+  assert.ok(ids?.has('rsa-keygen'), 'expected rsa-keygen');
+  assert.ok(ids?.has('ec-keygen'), 'expected ec-keygen');
+});
+
+test('pem fixture is reported as crypto material', () => {
+  const result = scan(FIXTURES);
+  assert.ok(
+    result.materials.some((m) => m.file.endsWith('server.pem')),
+    'expected server.pem in materials',
+  );
+});
+
+test('SARIF log has valid shape with rules and located results', () => {
+  const sarif = buildSarif(scan(FIXTURES)) as {
+    version: string;
+    runs: Array<{
+      tool: { driver: { name: string; rules: Array<{ id: string }> } };
+      results: Array<{
+        ruleId: string;
+        level: string;
+        locations: Array<{ physicalLocation: { region: { startLine: number } } }>;
+      }>;
+    }>;
+  };
+  assert.equal(sarif.version, '2.1.0');
+  const run = sarif.runs[0];
+  assert.equal(run.tool.driver.name, 'pqc-radar');
+  assert.ok(run.results.length > 0, 'expected results');
+  const ruleIds = new Set(run.tool.driver.rules.map((r) => r.id));
+  for (const r of run.results) {
+    assert.ok(ruleIds.has(r.ruleId), `result ruleId ${r.ruleId} must exist in rules`);
+    assert.ok(r.locations[0].physicalLocation.region.startLine >= 1);
+  }
 });
 
 test('CBOM is valid CycloneDX 1.6 shape with evidence occurrences', () => {

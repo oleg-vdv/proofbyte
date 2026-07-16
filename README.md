@@ -16,22 +16,45 @@ artifacts** — not questionnaires.
 ## Quick start
 
 ```bash
-npx @proofbyte/pqc-radar scan ./my-repo --cbom cbom.json --report report.md
+npx @proofbyte/pqc-radar scan ./my-repo --cbom cbom.json --report report.md --sarif findings.sarif
 ```
 
 `pqc-radar` walks your repository, detects quantum-vulnerable cryptography
-(RSA, ECC/ECDSA/ECDH, DH, legacy hashes, weak TLS configs) and emits:
+(RSA, ECC/ECDSA/ECDH, DH, DSA, Curve25519, legacy hashes, weak TLS configs) and emits:
 
 - **`cbom.json`** — a [CycloneDX 1.6](https://cyclonedx.org/capabilities/cbom/) Cryptographic
   Bill of Materials, the artifact regulators and auditors ask for;
 - **`report.md`** — a human-readable findings report with a prioritized migration plan
-  (ML-KEM / FIPS 203, ML-DSA / FIPS 204, hybrid TLS).
+  (ML-KEM / FIPS 203, ML-DSA / FIPS 204, hybrid TLS);
+- **`findings.sarif`** — a SARIF 2.1.0 log for GitHub code scanning or any SARIF viewer.
+
+Fast: a 117-file crypto-heavy repository ([node-forge](https://github.com/digitalbazaar/forge))
+scans in ~0.7 s.
+
+**Language coverage (v0):** Java/Kotlin/Scala, Python, JavaScript/TypeScript, Go, C#, Rust,
+Ruby, PHP, C/C++, plus nginx/Apache TLS configs and certificate/keystore file discovery.
+
+### CI gate
+
+```yaml
+- run: npx @proofbyte/pqc-radar scan . --sarif findings.sarif --fail-on-findings
+- uses: github/codeql-action/upload-sarif@v3
+  if: always()
+  with:
+    sarif_file: findings.sarif
+```
+
+## Security
+
+The scanner is **fully offline** (no network calls), has **zero runtime dependencies**,
+never modifies scanned code, skips symlinks, and only writes the output files you name.
+See [SECURITY.md](SECURITY.md).
 
 ## Status & roadmap
 
-v0 uses fast pattern-based detection (Java, Python, JavaScript/TypeScript, Go, C#, nginx).
+v0 uses fast line-pattern detection. Absence of findings is not proof of absence.
 Planned: [PQCA CBOMkit](https://pqca.org/projects/cbomkit/) engine integration for deep AST
-analysis, container/TLS endpoint collectors, signed artifacts, CI gate mode.
+analysis, container/TLS endpoint collectors, signed artifacts.
 
 ## Development
 

@@ -3,16 +3,18 @@ import { writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { buildCbom } from './cbom.ts';
 import { buildReport } from './report.ts';
+import { buildSarif } from './sarif.ts';
 import { scan } from './scanner.ts';
 
 const USAGE = `pqc-radar — cryptographic inventory & post-quantum migration report
 
 Usage:
-  pqc-radar scan <path> [--cbom <file>] [--report <file>] [--fail-on-findings]
+  pqc-radar scan <path> [--cbom <file>] [--report <file>] [--sarif <file>] [--fail-on-findings]
 
 Options:
   --cbom <file>        Write CycloneDX 1.6 CBOM JSON to <file>
   --report <file>      Write human-readable Markdown report to <file>
+  --sarif <file>       Write SARIF 2.1.0 log to <file> (GitHub code scanning)
   --fail-on-findings   Exit with code 1 if quantum-vulnerable crypto is found (CI gate)
 `;
 
@@ -26,6 +28,7 @@ function main(argv: string[]): number {
   const target = resolve(rest[0]);
   let cbomPath: string | undefined;
   let reportPath: string | undefined;
+  let sarifPath: string | undefined;
   let failOnFindings = false;
 
   for (let i = 1; i < rest.length; i++) {
@@ -35,6 +38,9 @@ function main(argv: string[]): number {
         break;
       case '--report':
         reportPath = rest[++i];
+        break;
+      case '--sarif':
+        sarifPath = rest[++i];
         break;
       case '--fail-on-findings':
         failOnFindings = true;
@@ -63,7 +69,11 @@ function main(argv: string[]): number {
     writeFileSync(reportPath, buildReport(result));
     console.log(`Report written to ${reportPath}`);
   }
-  if (!cbomPath && !reportPath) {
+  if (sarifPath) {
+    writeFileSync(sarifPath, JSON.stringify(buildSarif(result), null, 2));
+    console.log(`SARIF written to ${sarifPath}`);
+  }
+  if (!cbomPath && !reportPath && !sarifPath) {
     process.stdout.write(buildReport(result) + '\n');
   }
 
