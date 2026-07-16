@@ -1,0 +1,23 @@
+name: Action self-test
+
+on:
+  push:
+    branches: [main]
+    paths: ['action.yml', '.github/workflows/action-test.yml']
+  workflow_dispatch:
+
+jobs:
+  use-local-action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run the published action against this repo
+        uses: ./
+        with:
+          path: packages/pqc-radar/test/fixtures
+      - name: Assert artifacts were produced
+        run: |
+          test -s pqc-cbom.json
+          test -s pqc-report.md
+          test -s pqc-findings.sarif
+          echo "All three artifacts present."

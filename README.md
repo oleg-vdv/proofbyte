@@ -47,7 +47,15 @@ key-exchange group and certificate key — and whether the endpoint already spea
 harvest-now-decrypt-later exposed. Unknown groups are reported as *inconclusive*,
 never as findings.
 
-### CI gate
+### CI gate — one line via the GitHub Action
+
+```yaml
+- uses: oleg-vdv/proofbyte@v1
+  with:
+    fail-on-findings: 'true'
+```
+
+Or with plain npx:
 
 ```yaml
 - run: npx @proofbyte/pqc-radar scan . --sarif findings.sarif --fail-on-findings
@@ -55,6 +63,12 @@ never as findings.
   if: always()
   with:
     sarif_file: findings.sarif
+```
+
+Add the badge to show your repo is scanned:
+
+```markdown
+[![PQC-scanned](https://img.shields.io/badge/PQC-scanned-2ea44f?logo=github)](https://github.com/oleg-vdv/proofbyte)
 ```
 
 ## Security

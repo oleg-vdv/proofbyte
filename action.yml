@@ -1,0 +1,44 @@
+name: 'pqc-radar — post-quantum crypto scan'
+description: >-
+  Cryptographic inventory (CycloneDX CBOM), post-quantum migration report and
+  SARIF findings for your repository. Offline, zero dependencies, read-only.
+author: 'ProofByte'
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  path:
+    description: 'Directory to scan'
+    default: '.'
+  cbom:
+    description: 'Write CycloneDX 1.6 CBOM to this file (empty to skip)'
+    default: 'pqc-cbom.json'
+  report:
+    description: 'Write Markdown report to this file (empty to skip)'
+    default: 'pqc-report.md'
+  sarif:
+    description: 'Write SARIF 2.1.0 log to this file (empty to skip)'
+    default: 'pqc-findings.sarif'
+  fail-on-findings:
+    description: 'Fail the step when quantum-vulnerable crypto is found'
+    default: 'false'
+  version:
+    description: 'Version of @proofbyte/pqc-radar to run'
+    default: 'latest'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v7
+      with:
+        node-version: 24
+    - name: Run pqc-radar
+      shell: bash
+      run: |
+        ARGS=()
+        [ -n "${{ inputs.cbom }}" ] && ARGS+=(--cbom "${{ inputs.cbom }}")
+        [ -n "${{ inputs.report }}" ] && ARGS+=(--report "${{ inputs.report }}")
+        [ -n "${{ inputs.sarif }}" ] && ARGS+=(--sarif "${{ inputs.sarif }}")
+        [ "${{ inputs.fail-on-findings }}" = "true" ] && ARGS+=(--fail-on-findings)
+        npx --yes "@proofbyte/pqc-radar@${{ inputs.version }}" scan "${{ inputs.path }}" "${ARGS[@]}"
