@@ -1,0 +1,93 @@
+name: Benchmark vs CBOMkit
+
+on:
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+
+      - name: Prepare targets
+        run: |
+          mkdir -p targets out/ours out/cbomkit
+          cp -r packages/pqc-radar/test/fixtures targets/fixtures
+          git clone --quiet --depth 1 https://github.com/jpadilla/pyjwt targets/pyjwt
+          git clone --quiet --depth 1 https://github.com/jwtk/jjwt targets/jjwt
+
+      - name: pqc-radar scans
+        run: |
+          for t in fixtures pyjwt jjwt; do
+            start=$(date +%s%N)
+            node packages/pqc-radar/dist/index.js scan "targets/$t" --cbom "out/ours/$t.json"
+            end=$(date +%s%N)
+            awk "BEGIN {printf \"%.2f\", ($end - $start) / 1000000000}" > "out/ours/$t.time"
+          done
+
+      - name: CBOMkit scan fixtures
+        uses: cbomkit/cbomkit-action@v2.1.1
+        continue-on-error: true
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}/targets/fixtures
+          CBOMKIT_OUTPUT_DIR: ${{ github.workspace }}/out/cbomkit/fixtures
+          CBOMKIT_LANGUAGES: java, python
+          CBOMKIT_JAVA_REQUIRE_BUILD: 'false'
+
+      - name: CBOMkit scan pyjwt
+        uses: cbomkit/cbomkit-action@v2.1.1
+        continue-on-error: true
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}/targets/pyjwt
+          CBOMKIT_OUTPUT_DIR: ${{ github.workspace }}/out/cbomkit/pyjwt
+          CBOMKIT_LANGUAGES: python
+
+      - name: CBOMkit scan jjwt
+        uses: cbomkit/cbomkit-action@v2.1.1
+        continue-on-error: true
+        env:
+          GITHUB_WORKSPACE: ${{ github.workspace }}/targets/jjwt
+          CBOMKIT_OUTPUT_DIR: ${{ github.workspace }}/out/cbomkit/jjwt
+          CBOMKIT_LANGUAGES: java
+          CBOMKIT_JAVA_REQUIRE_BUILD: 'false'
+
+      - name: Compare
+        if: always()
+        run: |
+          echo "## Raw comparison data" > comparison.md
+          echo "" >> comparison.md
+          echo "| Target | Tool | Crypto assets | Evidence occurrences | Time (s) |" >> comparison.md
+          echo "|---|---|---|---|---|" >> comparison.md
+          for t in fixtures pyjwt jjwt; do
+            ours="out/ours/$t.json"
+            oa=$(jq '[.components[]? | select(.type=="cryptographic-asset")] | length' "$ours")
+            oo=$(jq '[.components[]?.evidence.occurrences[]?] | length' "$ours")
+            ot=$(cat "out/ours/$t.time")
+            echo "| $t | pqc-radar | $oa | $oo | $ot |" >> comparison.md
+            theirs=$(find "out/cbomkit/$t" -name '*.json' 2>/dev/null | head -1)
+            if [ -n "$theirs" ] && [ -s "$theirs" ]; then
+              ta=$(jq '[.components[]? | select(.type=="cryptographic-asset")] | length' "$theirs")
+              to=$(jq '[.components[]?.evidence.occurrences[]?] | length' "$theirs")
+              echo "| $t | CBOMkit | $ta | $to | n/a |" >> comparison.md
+            else
+              echo "| $t | CBOMkit | (no output) | (no output) | n/a |" >> comparison.md
+            fi
+          done
+          echo "" >> comparison.md
+          echo '### CBOMkit output files found:' >> comparison.md
+          find out/cbomkit -type f 2>/dev/null >> comparison.md || echo none >> comparison.md
+          cat comparison.md
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: benchmark
+          path: |
+            comparison.md
+            out/
