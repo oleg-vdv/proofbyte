@@ -30,7 +30,9 @@ npx @proofbyte/pqc-radar scan ./my-repo --cbom cbom.json --report report.md --sa
 
 Fast: [hashicorp/vault](https://github.com/hashicorp/vault) (4 827 files) scans in ~9 s,
 [node-forge](https://github.com/digitalbazaar/forge) in ~0.7 s — see
-[real-world corpus results](docs/CORPUS.md), regenerated weekly in CI.
+[real-world corpus results](docs/CORPUS.md), regenerated weekly in CI, and the
+[honest benchmark vs PQCA CBOMkit](docs/BENCHMARK.md) (spoiler: they're complementary —
+CBOMkit goes deeper on Java/Python, pqc-radar covers the whole polyglot estate).
 
 **Language coverage (v0):** Java/Kotlin/Scala, Python, JavaScript/TypeScript, Go, C#, Rust,
 Ruby, PHP, C/C++, plus nginx/Apache TLS configs and certificate/keystore file discovery.
