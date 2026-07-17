@@ -1,6 +1,6 @@
 # ProofByte
 
-> Vanta proves your processes. **ProofByte proves your bytes.**
+> Vanta proves your processes. **ProofByte proves your bytes.** 
 
 ProofByte is a technical-evidence engine for the 2027–2028 regulatory wave: it scans your
 actual code, containers and runtime, and produces **machine-verifiable, auditor-ready
