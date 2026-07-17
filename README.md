@@ -98,6 +98,11 @@ Golden-fixture tests live in `packages/pqc-radar/test/fixtures` — small repos 
 deliberately planted crypto; every scanner change is verified against them. CI also
 dogfoods: the repo scans itself on every push.
 
+## Read more
+
+- [The post-quantum deadlines are closer than your roadmap thinks — so I built a CBOM scanner](https://dev.to/olegvdv/the-post-quantum-deadlines-are-closer-than-your-roadmap-thinks-so-i-built-a-cbom-scanner-55l9) (dev.to)
+- [Benchmark vs PQCA CBOMkit](docs/BENCHMARK.md) · [Real-world corpus](docs/CORPUS.md)
+
 ## License
 
 MIT
