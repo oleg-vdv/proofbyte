@@ -32,7 +32,7 @@ jobs:
           done
 
       - name: CBOMkit scan fixtures
-        uses: cbomkit/cbomkit-action@v2.1.1
+        uses: cbomkit/cbomkit-action@v2.2.0
         continue-on-error: true
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}/targets/fixtures
@@ -41,7 +41,7 @@ jobs:
           CBOMKIT_JAVA_REQUIRE_BUILD: 'false'
 
       - name: CBOMkit scan pyjwt
-        uses: cbomkit/cbomkit-action@v2.1.1
+        uses: cbomkit/cbomkit-action@v2.2.0
         continue-on-error: true
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}/targets/pyjwt
@@ -49,7 +49,7 @@ jobs:
           CBOMKIT_LANGUAGES: python
 
       - name: CBOMkit scan jjwt
-        uses: cbomkit/cbomkit-action@v2.1.1
+        uses: cbomkit/cbomkit-action@v2.2.0
         continue-on-error: true
         env:
           GITHUB_WORKSPACE: ${{ github.workspace }}/targets/jjwt
