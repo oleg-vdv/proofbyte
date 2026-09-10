@@ -11,13 +11,28 @@ artifacts** — not questionnaires.
 | Pack | Status | Regulatory driver |
 |---|---|---|
 | **pqc-radar** — cryptographic inventory (CBOM) + post-quantum migration plan | 🚧 v0 | US EO 14412, CNSA 2.0 (2027), UK NCSC (2028), EU PQC transition (from 2026) |
-| **agent-trace** — AI-agent inventory & traceability evidence via MCP gateway | 📋 planned | EU AI Act Art. 12 (high-risk deadline 2027-12-02) |
+| **agent-trace** — AI-agent inventory + tamper-evident action-log verification | 🚧 v0 | EU AI Act Art. 12 (high-risk deadline 2027-12-02), Kazakhstan AI Law 230-VIII |
 
 ## Quick start
 
 ```bash
 npx @proofbyte/pqc-radar scan ./my-repo --cbom cbom.json --report report.md --sarif findings.sarif
 ```
+
+`agent-trace` inventories the agents a codebase declares (MCP server configs,
+agent-framework imports, workflow files) and independently verifies a
+hash-chained action log — the evidence an auditor asks for when the question is
+"what did the agent actually do":
+
+```bash
+npx @proofbyte/agent-trace scan ./my-repo --out agents.json
+npx @proofbyte/agent-trace verify ./journal.jsonl
+npx @proofbyte/agent-trace evidence --inventory agents.json --journal journal.jsonl --report evidence.md
+```
+
+The verifier is deliberately a separate implementation from the writer: proof
+that only its own author can check is not proof. The package's test suite
+verifies a journal produced by a Python writer.
 
 `pqc-radar` walks your repository, detects quantum-vulnerable cryptography
 (RSA, ECC/ECDSA/ECDH, DH, DSA, Curve25519, legacy hashes, weak TLS configs) and emits:

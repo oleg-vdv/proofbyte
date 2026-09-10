@@ -1,0 +1,46 @@
+{
+  "name": "@proofbyte/agent-trace",
+  "version": "0.1.0",
+  "description": "AI-agent inventory and tamper-evident action-log verification: auditor-ready traceability evidence for EU AI Act Art. 12",
+  "license": "MIT",
+  "type": "module",
+  "author": "Oleg Vdovenko",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oleg-vdv/proofbyte.git",
+    "directory": "packages/agent-trace"
+  },
+  "homepage": "https://github.com/oleg-vdv/proofbyte#readme",
+  "bugs": "https://github.com/oleg-vdv/proofbyte/issues",
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "agent-trace": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "tsc && node --test test/journal.test.ts test/inventory.test.ts",
+    "test": "node --test test/journal.test.ts test/inventory.test.ts",
+    "dev": "node src/index.ts"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "@types/node": "^26.1.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "ai-agents",
+    "traceability",
+    "audit-log",
+    "eu-ai-act",
+    "compliance",
+    "evidence",
+    "mcp"
+  ]
+}
