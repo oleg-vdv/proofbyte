@@ -21,13 +21,13 @@ const MCP_CONFIG_NAMES = new Set([
 ]);
 
 const FRAMEWORK_MARKERS: Array<{ pattern: RegExp; name: string; why: string }> = [
-  { pattern: /from\s+langgraph|import\s+langgraph/, name: "langgraph", why: "граф агентов LangGraph" },
-  { pattern: /from\s+crewai|import\s+crewai/, name: "crewai", why: "мультиагентный фреймворк CrewAI" },
-  { pattern: /autogen_agentchat|from\s+autogen/, name: "autogen", why: "AutoGen: агенты с обменом сообщениями" },
+  { pattern: /from\s+langgraph|import\s+langgraph/, name: "langgraph", why: "LangGraph agent graph" },
+  { pattern: /from\s+crewai|import\s+crewai/, name: "crewai", why: "CrewAI multi-agent framework" },
+  { pattern: /autogen_agentchat|from\s+autogen/, name: "autogen", why: "AutoGen: message-passing agents" },
   { pattern: /openai[-_]agents|from\s+agents\s+import/, name: "openai-agents", why: "OpenAI Agents SDK" },
   { pattern: /@anthropic-ai\/claude-agent-sdk|claude_agent_sdk/, name: "claude-agent-sdk", why: "Claude Agent SDK" },
-  { pattern: /@modelcontextprotocol\/sdk|mcp\.server|FastMCP/, name: "mcp-sdk", why: "сервер или клиент MCP" },
-  { pattern: /smolagents|llama_index\.core\.agent/, name: "other-agent-framework", why: "агентский фреймворк" },
+  { pattern: /@modelcontextprotocol\/sdk|mcp\.server|FastMCP/, name: "mcp-sdk", why: "MCP server or client" },
+  { pattern: /smolagents|llama_index\.core\.agent/, name: "other-agent-framework", why: "agent framework" },
 ];
 
 const CODE_EXT = new Set([".py", ".ts", ".tsx", ".js", ".mjs", ".jsx", ".go", ".rb", ".java", ".cs"]);
@@ -80,7 +80,7 @@ function fromMcpConfig(file: string, root: string, text: string): AgentRecord[] 
       name,
       transport,
       tools: tools.length ? tools : undefined,
-      why: "объявлен как сервер MCP: даёт агенту доступ к инструментам и данным",
+      why: "declared as an MCP server: gives an agent access to tools and data",
     };
   });
 }
@@ -108,7 +108,7 @@ function fromWorkflow(file: string, root: string, text: string): AgentRecord[] {
     kind: "workflow",
     source: relative(root, file),
     name: basename(file),
-    why: "файл автоматизации: узлы выполняются без участия человека",
+    why: "automation file: nodes run without a human in the loop",
   }];
 }
 

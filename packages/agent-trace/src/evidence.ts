@@ -14,39 +14,39 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
   const claims: EvidenceClaim[] = [];
 
   claims.push({
-    requirement: "Учёт систем: организация ведёт инвентарь агентов",
+    requirement: "Inventory: the organisation keeps a register of its agents",
     source: "EU AI Act Art. 12 (record-keeping); практика AI-инвентаризации",
     status: inventory ? (inventory.agents.length ? "supported" : "partial") : "not-covered",
     note: inventory
       ? inventory.agents.length
-        ? `обнаружено объявлений: ${inventory.agents.length} в ${inventory.filesScanned} файлах`
-        : "объявлений не найдено; отсутствие находок не является доказательством отсутствия"
-      : "инвентарь не предоставлен",
+        ? `${inventory.agents.length} declarations across ${inventory.filesScanned} files`
+        : "no declarations found; absence of findings is not proof of absence"
+      : "no inventory provided",
   });
 
   claims.push({
-    requirement: "Автоматическая регистрация событий за период работы системы",
+    requirement: "Automatic recording of events over the system's period of operation",
     source: "EU AI Act Art. 12; Закон РК № 230-VIII ст. 15 п. 2",
     status: log ? (log.ok ? "supported" : "not-covered") : "not-covered",
     note: log
       ? log.ok
-        ? `проверено записей: ${log.entries}, цепочка целостна`
-        : `цепочка нарушена: ${log.problem?.reason ?? "неизвестно"} (запись ${log.problem?.seq ?? "?"})`
-      : "журнал не предоставлен",
+        ? `${log.entries} records verified, chain intact`
+        : `chain broken: ${log.problem?.reason ?? "unknown"} (record ${log.problem?.seq ?? "?"})`
+      : "no journal provided",
   });
 
   claims.push({
-    requirement: "Неизменяемость журнала подтверждается независимой проверкой",
+    requirement: "Log immutability is confirmed by an independent check",
     source: "внешняя верификация цепочки хешей",
     status: log?.ok ? "supported" : "not-covered",
-    note: log?.head ? `корень цепочки: ${log.head}` : "корень цепочки недоступен",
+    note: log?.head ? `chain head: ${log.head}` : "chain head unavailable",
   });
 
   claims.push({
-    requirement: "Юридическая значимость: корень цепочки подписан",
-    source: "подпись ЭЦП организации; вне зоны ответственности этого инструмента",
+    requirement: "Legal weight: the chain head is signed",
+    source: "organisation signature; outside the scope of this tool",
     status: "not-covered",
-    note: "проверьте отдельно, что корень цепочки подписан и подпись сохранена",
+    note: "verify separately that the chain head is signed and the signature is kept",
   });
 
   return claims;

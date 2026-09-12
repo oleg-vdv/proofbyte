@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * agent-trace — инвентарь агентов и проверка журнала их действий.
+ * agent-trace — agent inventory and verification of their action log.
  *
  *   agent-trace scan <dir> [--out agents.json] [--report report.md]
  *   agent-trace verify <journal.jsonl>
@@ -45,11 +45,14 @@ function main(argv: string[]): void {
     const report = flag(args, "report");
     if (report) writeFileSync(report, renderMarkdown(buildPack(inventory, null)), "utf8");
     process.stdout.write(
-      `Просканировано файлов: ${inventory.filesScanned}\n` +
-      `Обнаружено объявлений агентов: ${inventory.agents.length}\n`,
+      `Files scanned: ${inventory.filesScanned}
+` +
+      `Agent declarations found: ${inventory.agents.length}
+`,
     );
     for (const a of inventory.agents) {
-      process.stdout.write(`  · ${a.name} [${a.kind}] — ${a.source}\n`);
+      process.stdout.write(`  · ${a.name} [${a.kind}] — ${a.source}
+`);
     }
     return;
   }
@@ -60,12 +63,15 @@ function main(argv: string[]): void {
     const result = verifyFile(path);
     if (result.ok) {
       process.stdout.write(
-        `Целостность подтверждена. Записей: ${result.entries}\nКорень цепочки: ${result.head}\n`,
+        `Integrity confirmed. Records: ${result.entries}
+Chain head: ${result.head}
+`,
       );
       return;
     }
     process.stdout.write(
-      `Целостность НАРУШЕНА. Запись ${result.problem?.seq}: ${result.problem?.reason}\n`,
+      `Integrity BROKEN. Record ${result.problem?.seq}: ${result.problem?.reason}
+`,
     );
     process.exit(2);
   }
@@ -82,7 +88,8 @@ function main(argv: string[]): void {
     const report = flag(args, "report");
     if (report) writeFileSync(report, renderMarkdown(pack), "utf8");
     const covered = pack.claims.filter((c) => c.status === "supported").length;
-    process.stdout.write(`Требований подтверждено: ${covered} из ${pack.claims.length}\n`);
+    process.stdout.write(`Requirements supported: ${covered} of ${pack.claims.length}
+`);
     return;
   }
 

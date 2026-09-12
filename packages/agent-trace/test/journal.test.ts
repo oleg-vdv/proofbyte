@@ -19,7 +19,7 @@ test("подделанная запись обнаруживается", () => {
   const result = verifyFile(fixture("journal-tampered.jsonl"));
   assert.equal(result.ok, false);
   assert.equal(result.problem?.seq, 1);
-  assert.match(result.problem?.reason ?? "", /изменено/);
+  assert.match(result.problem?.reason ?? "", /content changed/);
 });
 
 test("хеш не зависит от порядка ключей", () => {

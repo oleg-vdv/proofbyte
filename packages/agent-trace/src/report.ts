@@ -3,19 +3,19 @@
 import type { EvidencePack } from "./types.ts";
 
 const STATUS_LABEL: Record<string, string> = {
-  supported: "подтверждено",
-  partial: "частично",
-  "not-covered": "не покрыто",
+  supported: "supported",
+  partial: "partial",
+  "not-covered": "not covered",
 };
 
 export function renderMarkdown(pack: EvidencePack): string {
   const lines: string[] = [];
-  lines.push("# Agent trace — пакет доказательств", "");
-  lines.push(`Сформирован: ${pack.generatedAt}`);
-  lines.push(`Инструмент: ${pack.tool.name} ${pack.tool.version}`, "");
+  lines.push("# Agent trace — evidence pack", "");
+  lines.push(`Generated: ${pack.generatedAt}`);
+  lines.push(`Tool: ${pack.tool.name} ${pack.tool.version}`, "");
 
-  lines.push("## Требования", "");
-  lines.push("| Требование | Статус | Комментарий |");
+  lines.push("## Requirements", "");
+  lines.push("| Requirement | Status | Note |");
   lines.push("|---|---|---|");
   for (const c of pack.claims) {
     lines.push(`| ${c.requirement} | ${STATUS_LABEL[c.status] ?? c.status} | ${c.note} |`);
@@ -23,23 +23,23 @@ export function renderMarkdown(pack: EvidencePack): string {
   lines.push("");
 
   if (pack.log) {
-    lines.push("## Журнал действий", "");
-    lines.push(`- записей проверено: ${pack.log.entries}`);
-    lines.push(`- целостность: ${pack.log.ok ? "подтверждена" : "нарушена"}`);
-    if (pack.log.head) lines.push(`- корень цепочки: \`${pack.log.head}\``);
+    lines.push("## Action journal", "");
+    lines.push(`- records verified: ${pack.log.entries}`);
+    lines.push(`- integrity: ${pack.log.ok ? "confirmed" : "broken"}`);
+    if (pack.log.head) lines.push(`- chain head: \`${pack.log.head}\``);
     if (pack.log.problem) {
-      lines.push(`- поломка на записи ${pack.log.problem.seq}: ${pack.log.problem.reason}`);
+      lines.push(`- break at record ${pack.log.problem.seq}: ${pack.log.problem.reason}`);
     }
     lines.push("");
   }
 
   if (pack.inventory) {
-    lines.push("## Инвентарь агентов", "");
-    lines.push(`Просканировано файлов: ${pack.inventory.filesScanned}`, "");
+    lines.push("## Agent inventory", "");
+    lines.push(`Files scanned: ${pack.inventory.filesScanned}`, "");
     if (!pack.inventory.agents.length) {
-      lines.push("Объявлений не найдено. Отсутствие находок не является доказательством отсутствия агентов.", "");
+      lines.push("No declarations found. Absence of findings is not proof that no agents exist.", "");
     } else {
-      lines.push("| Имя | Тип | Файл | Почему в инвентаре |");
+      lines.push("| Name | Kind | File | Why it is listed |");
       lines.push("|---|---|---|---|");
       for (const a of pack.inventory.agents) {
         lines.push(`| ${a.name} | ${a.kind} | \`${a.source}\` | ${a.why} |`);
@@ -49,7 +49,7 @@ export function renderMarkdown(pack: EvidencePack): string {
   }
 
   lines.push("---", "");
-  lines.push("Инструмент проверяет артефакты, а не соответствие закону целиком: ");
-  lines.push("статус «подтверждено» означает, что доказательство есть и оно целостно.");
+  lines.push("This tool verifies artefacts, not full legal compliance: ");
+  lines.push("a supported status means the evidence exists and is intact.");
   return lines.join("\n") + "\n";
 }
