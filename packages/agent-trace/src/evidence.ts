@@ -55,7 +55,7 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
 export function buildPack(inventory: Inventory | null, log: VerifyResult | null): EvidencePack {
   return {
     generatedAt: new Date().toISOString(),
-    tool: { name: "@proofbyte/agent-trace", version: VERSION },
+    tool: { name: "proofbyte-agent-trace", version: VERSION },
     inventory,
     log,
     claims: buildClaims(inventory, log),

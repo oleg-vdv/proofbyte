@@ -1,5 +1,5 @@
 {
-  "name": "@proofbyte/agent-trace",
+  "name": "proofbyte-agent-trace",
   "version": "0.1.0",
   "description": "AI-agent inventory and tamper-evident action-log verification: auditor-ready traceability evidence for EU AI Act Art. 12",
   "license": "MIT",
@@ -12,10 +12,8 @@
   },
   "homepage": "https://github.com/oleg-vdv/proofbyte#readme",
   "bugs": "https://github.com/oleg-vdv/proofbyte/issues",
-  "publishConfig": {
-    "access": "public"
-  },
   "bin": {
+    "proofbyte-agent-trace": "dist/index.js",
     "agent-trace": "dist/index.js"
   },
   "files": [

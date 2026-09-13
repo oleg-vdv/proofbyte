@@ -1,4 +1,4 @@
-# @proofbyte/agent-trace
+# proofbyte-agent-trace
 
 > Инвентарь ИИ-агентов и независимая проверка журнала их действий.
 
@@ -14,9 +14,9 @@
 ## Быстрый старт
 
 ```bash
-npx @proofbyte/agent-trace scan ./my-repo --out agents.json --report agents.md
-npx @proofbyte/agent-trace verify ./journal.jsonl
-npx @proofbyte/agent-trace evidence --inventory agents.json --journal journal.jsonl \
+npx proofbyte-agent-trace scan ./my-repo --out agents.json --report agents.md
+npx proofbyte-agent-trace verify ./journal.jsonl
+npx proofbyte-agent-trace evidence --inventory agents.json --journal journal.jsonl \
     --out evidence.json --report evidence.md
 ```
 
@@ -65,8 +65,8 @@ v0 обнаруживает **объявления**, а не поведение
 
 ```bash
 npm install
-npm run build --workspace @proofbyte/agent-trace
-npm test --workspace @proofbyte/agent-trace
+npm run build --workspace proofbyte-agent-trace
+npm test --workspace proofbyte-agent-trace
 ```
 
 ## Лицензия

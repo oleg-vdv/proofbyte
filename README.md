@@ -25,9 +25,9 @@ hash-chained action log — the evidence an auditor asks for when the question i
 "what did the agent actually do":
 
 ```bash
-npx @proofbyte/agent-trace scan ./my-repo --out agents.json
-npx @proofbyte/agent-trace verify ./journal.jsonl
-npx @proofbyte/agent-trace evidence --inventory agents.json --journal journal.jsonl --report evidence.md
+npx proofbyte-agent-trace scan ./my-repo --out agents.json
+npx proofbyte-agent-trace verify ./journal.jsonl
+npx proofbyte-agent-trace evidence --inventory agents.json --journal journal.jsonl --report evidence.md
 ```
 
 The verifier is deliberately a separate implementation from the writer: proof
