@@ -1,10 +1,10 @@
 {
   "name": "proofbyte-agent-trace",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "AI-agent inventory and tamper-evident action-log verification: auditor-ready traceability evidence for EU AI Act Art. 12",
   "license": "MIT",
   "type": "module",
-  "author": "Oleg Vdovenko",
+  "author": "Oleg Vdovin",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oleg-vdv/proofbyte.git",

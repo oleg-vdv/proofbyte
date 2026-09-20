@@ -4,7 +4,7 @@
   "description": "Cryptographic inventory (CycloneDX CBOM) and post-quantum migration report for your codebase",
   "license": "MIT",
   "type": "module",
-  "author": "Oleg Vdovenko",
+  "author": "Oleg Vdovin",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oleg-vdv/proofbyte.git",
