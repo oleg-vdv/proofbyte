@@ -15,7 +15,7 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
 
   claims.push({
     requirement: "Inventory: the organisation keeps a register of its agents",
-    source: "EU AI Act Art. 12 (record-keeping); практика AI-инвентаризации",
+    source: "Закон РК № 230-VIII ст. 17 п. 1–2 (класс риска назначает собственник); практика AI-инвентаризации",
     status: inventory ? (inventory.agents.length ? "supported" : "partial") : "not-covered",
     note: inventory
       ? inventory.agents.length
@@ -26,7 +26,7 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
 
   claims.push({
     requirement: "Automatic recording of events over the system's period of operation",
-    source: "EU AI Act Art. 12; Закон РК № 230-VIII ст. 15 п. 2",
+    source: "EU AI Act Art. 12; Закон РК № 230-VIII ст. 8 п. 1 (постоянный контроль)",
     status: log ? (log.ok ? "supported" : "not-covered") : "not-covered",
     note: log
       ? log.ok
@@ -37,7 +37,7 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
 
   claims.push({
     requirement: "Log immutability is confirmed by an independent check",
-    source: "внешняя верификация цепочки хешей",
+    source: "Закон РК № 230-VIII ст. 15 п. 2 подп. 2 (защита от несанкционированного доступа); внешняя верификация цепочки хешей",
     status: log?.ok ? "supported" : "not-covered",
     note: log?.head ? `chain head: ${log.head}` : "chain head unavailable",
   });
