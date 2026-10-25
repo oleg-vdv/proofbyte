@@ -3,8 +3,8 @@
  * agent-trace — agent inventory and verification of their action log.
  *
  *   agent-trace scan <dir> [--out agents.json] [--report report.md]
- *   agent-trace verify <journal.jsonl>
- *   agent-trace evidence [--inventory agents.json] [--journal j.jsonl]
+ *   agent-trace verify <journal.jsonl> [--anchor <hash>]...
+ *   agent-trace evidence [--inventory agents.json] [--journal j.jsonl] [--anchor <hash>]...
  *                        [--out evidence.json] [--report evidence.md]
  */
 
@@ -22,13 +22,17 @@ function flag(args: string[], name: string): string | undefined {
   return i >= 0 ? args[i + 1] : undefined;
 }
 
+function flags(args: string[], name: string): string[] {
+  return args.flatMap((a, i) => (a === `--${name}` && args[i + 1] ? [args[i + 1]!] : []));
+}
+
 function usage(): never {
   process.stdout.write(
     `agent-trace ${VERSION}\n\n` +
     "  agent-trace scan <dir> [--out agents.json] [--report report.md]\n" +
-    "  agent-trace verify <journal.jsonl>\n" +
+    "  agent-trace verify <journal.jsonl> [--anchor <hash>]...\n" +
     "  agent-trace evidence [--inventory agents.json] [--journal journal.jsonl]\n" +
-    "                       [--out evidence.json] [--report evidence.md]\n",
+    "                       [--anchor <hash>]... [--out evidence.json] [--report evidence.md]\n",
   );
   process.exit(1);
 }
@@ -60,17 +64,23 @@ function main(argv: string[]): void {
   if (command === "verify") {
     const path = args[0];
     if (!path) usage();
-    const result = verifyFile(path);
+    const result = verifyFile(path, flags(args, "anchor"));
     if (result.ok) {
       process.stdout.write(
         `Integrity confirmed. Records: ${result.entries}
 Chain head: ${result.head}
 `,
       );
+      process.stdout.write(
+        result.anchors
+          ? `Anchored heads found: ${result.anchors.confirmed}; records after the last anchor: ${result.anchors.unanchoredTail}
+`
+          : "No anchored head given: truncation or a full rebuild of the journal cannot be detected (--anchor <hash>)\n",
+      );
       return;
     }
     process.stdout.write(
-      `Integrity BROKEN. Record ${result.problem?.seq}: ${result.problem?.reason}
+      `Integrity BROKEN. ${result.problem?.seq != null ? `Record ${result.problem.seq}: ` : ""}${result.problem?.reason}
 `,
     );
     process.exit(2);
@@ -82,7 +92,7 @@ Chain head: ${result.head}
     const inventory: Inventory | null = invPath
       ? (JSON.parse(readFileSync(invPath, "utf8")) as Inventory)
       : null;
-    const log: VerifyResult | null = logPath ? verifyFile(logPath) : null;
+    const log: VerifyResult | null = logPath ? verifyFile(logPath, flags(args, "anchor")) : null;
     const pack = buildPack(inventory, log);
     writeFileSync(flag(args, "out") ?? "evidence.json", JSON.stringify(pack, null, 2), "utf8");
     const report = flag(args, "report");

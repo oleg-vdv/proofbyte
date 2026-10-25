@@ -38,8 +38,13 @@ export function buildClaims(inventory: Inventory | null, log: VerifyResult | nul
   claims.push({
     requirement: "Log immutability is confirmed by an independent check",
     source: "Закон РК № 230-VIII ст. 15 п. 2 подп. 2 (защита от несанкционированного доступа); внешняя верификация цепочки хешей",
-    status: log?.ok ? "supported" : "not-covered",
-    note: log?.head ? `chain head: ${log.head}` : "chain head unavailable",
+    // Без внешнего корня цепочка не ловит обрезку хвоста и пересборку журнала.
+    status: log?.ok ? (log.anchors ? "supported" : "partial") : "not-covered",
+    note: !log?.head
+      ? "chain head unavailable"
+      : log.anchors
+        ? `chain head: ${log.head}; anchored heads confirmed: ${log.anchors.confirmed}, records after the last anchor: ${log.anchors.unanchoredTail}`
+        : `chain head: ${log.head}; no externally fixed head given, so truncation or a full rebuild would go unnoticed`,
   });
 
   claims.push({

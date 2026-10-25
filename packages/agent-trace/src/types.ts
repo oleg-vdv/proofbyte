@@ -30,6 +30,10 @@ export interface VerifyResult {
   entries: number;
   /** Хеш последней записи — то, что подписывается ЭЦП и публикуется. */
   head: string | null;
+  /** Формат журнала: kepil (seq, sha256:-префикс) или более ранний AI-Gateway. */
+  format?: "kepil" | "ai-gateway";
+  /** Корни, зафиксированные вне журнала и найденные в нём; хвост после последнего не защищён от обрезки. */
+  anchors?: { confirmed: number; unanchoredTail: number };
   /** Первая обнаруженная поломка, если она есть. */
   problem?: { seq: number | null; reason: string };
 }
