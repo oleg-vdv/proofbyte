@@ -8,7 +8,7 @@
 
 import type { EvidenceClaim, EvidencePack, Inventory, VerifyResult } from "./types.ts";
 
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.2";
 
 export function buildClaims(inventory: Inventory | null, log: VerifyResult | null): EvidenceClaim[] {
   const claims: EvidenceClaim[] = [];
